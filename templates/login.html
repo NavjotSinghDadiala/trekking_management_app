@@ -1,20 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    <form method="POST">
-        <label>Username:</label>
-        <input type="text" name="username" required><br><br>
-        
-        <label>Password:</label>
-        <input type="password" name="password" required><br><br>
-        
-        <button type="submit">Login</button>
-    </form>
-    <br>
-    <a href="{{ url_for('register') }}">Don't have an account? Register</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Sign In - TrekManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 p-4">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-box-arrow-in-right text-success fs-1"></i>
+                    <h2 class="mt-2 fw-bold text-dark">Welcome Back</h2>
+                    <p class="text-muted">Sign in to manage your treks and bookings</p>
+                </div>
+                
+                <form method="POST">
+                    <!-- Username Input -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <p class="mb-0">Don't have an account? <a href="{{ url_for('register') }}" class="text-success fw-bold">Register</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
