@@ -1,7 +1,8 @@
 import os
+from datetime import datetime, date
 from flask import Flask
 from extensions import db
-from models import User, Subject, Chapter, Quiz, Question, Score
+from models import User, StaffProfile, Trek, Booking
 
 # Create a temporary Flask app context to run SQLAlchemy creation commands
 app = Flask(__name__)
@@ -16,7 +17,7 @@ db.init_app(app)
 def seed_database():
     print("Initializing programmatic database creation inside site.db...")
     
-    # 1. Drop existing tables to clear old schemas (e.g. the old Trekking models or basic User model)
+    # 1. Drop existing tables to clear old schemas (e.g. the old education/quiz models)
     db.drop_all()
     
     # 2. Create the tables programmatically based on our new models.py definition
@@ -35,115 +36,96 @@ def seed_database():
     )
     
     approved_staff = User(
-        username="teacher", 
-        password="teacher", 
+        username="guide1", 
+        password="guide1", 
         role="staff", 
         is_approved=True
     )
     
     pending_staff = User(
-        username="guide", 
-        password="guide", 
+        username="guide2", 
+        password="guide2", 
         role="staff", 
         is_approved=False
     )
     
-    student_user = User(
-        username="student", 
-        password="student", 
+    trekker_user = User(
+        username="trekker1", 
+        password="trekker1", 
         role="user", 
         is_approved=True
     )
 
-    db.session.add_all([admin_user, approved_staff, pending_staff, student_user])
+    db.session.add_all([admin_user, approved_staff, pending_staff, trekker_user])
     db.session.commit()
-    print("- Seeded Users (Admin: 'admin', Staff: 'teacher' & 'guide', Student: 'student')")
+    print("- Seeded Users (Admin: 'admin', Staff: 'guide1' & 'guide2', Trekker: 'trekker1')")
 
-    # B. Subjects
-    maths = Subject(
-        name="Mathematics", 
-        description="Study of numbers, shapes, and patterns."
+    # B. Staff Profiles (Linked to the staff Users)
+    profile1 = StaffProfile(
+        user_id=approved_staff.id,
+        name="Rohan Sharma",
+        contact_details="Email: rohan@trekking.com, Phone: +91-9876543210",
+        status="Active"
     )
-    science = Subject(
-        name="Science", 
-        description="Exploring the physical and natural world through observation."
+
+    profile2 = StaffProfile(
+        user_id=pending_staff.id,
+        name="Aarav Patel",
+        contact_details="Email: aarav@trekking.com, Phone: +91-9876543211",
+        status="Pending"
     )
-    
-    db.session.add_all([maths, science])
+
+    db.session.add_all([profile1, profile2])
     db.session.commit()
-    print("- Seeded Subjects (Mathematics, Science)")
+    print("- Seeded Staff Profiles (Rohan Sharma - Active, Aarav Patel - Pending)")
 
-    # C. Chapters
-    algebra = Chapter(
-        subject_id=maths.id, 
-        name="Algebra", 
-        description="Introduction to variables, equations, and expressions."
-    )
-    gravity = Chapter(
-        subject_id=science.id, 
-        name="Gravity & Motion", 
-        description="Understanding force, speed, and gravitational acceleration."
+    # C. Treks
+    trek1 = Trek(
+        name="Kedarkantha Winter Trek",
+        location="Uttarakhand",
+        difficulty="Moderate",
+        duration=6,
+        max_slots=20,
+        available_slots=20,
+        assigned_staff_id=approved_staff.id,
+        status="Open",
+        start_date=date(2026, 12, 15),
+        end_date=date(2026, 12, 21),
+        price=8500.0
     )
 
-    db.session.add_all([algebra, gravity])
+    trek2 = Trek(
+        name="Triund Trail Weekend",
+        location="Dharamshala",
+        difficulty="Easy",
+        duration=2,
+        max_slots=15,
+        available_slots=15,
+        assigned_staff_id=approved_staff.id,
+        status="Open",
+        start_date=date(2026, 11, 5),
+        end_date=date(2026, 11, 7),
+        price=2500.0
+    )
+
+    trek3 = Trek(
+        name="Roopkund Expedition",
+        location="Chamoli",
+        difficulty="Hard",
+        duration=8,
+        max_slots=10,
+        available_slots=10,
+        assigned_staff_id=None,
+        status="Pending",
+        start_date=date(2026, 9, 10),
+        end_date=date(2026, 9, 18),
+        price=15000.0
+    )
+
+    db.session.add_all([trek1, trek2, trek3])
     db.session.commit()
-    print("- Seeded Chapters (Algebra, Gravity & Motion)")
+    print("- Seeded Treks (Kedarkantha - Open, Triund - Open, Roopkund - Pending)")
 
-    # D. Quizzes
-    quiz_algebra = Quiz(
-        chapter_id=algebra.id, 
-        title="Algebra Basics Quiz", 
-        time_duration=10, 
-        is_published=True
-    )
-    quiz_gravity = Quiz(
-        chapter_id=gravity.id, 
-        title="Gravity Basics Quiz", 
-        time_duration=5, 
-        is_published=True
-    )
-
-    db.session.add_all([quiz_algebra, quiz_gravity])
-    db.session.commit()
-    print("- Seeded Quizzes (Algebra Basics Quiz, Gravity Basics Quiz)")
-
-    # E. Questions
-    q1 = Question(
-        quiz_id=quiz_algebra.id,
-        question_text="What is the value of x in the equation: 2x + 5 = 15?",
-        option_a="5",
-        option_b="10",
-        option_c="15",
-        option_d="20",
-        correct_option="A",
-        marks=2
-    )
-
-    q2 = Question(
-        quiz_id=quiz_algebra.id,
-        question_text="If 3x = 9, what is the value of x?",
-        option_a="1",
-        option_b="2",
-        option_c="3",
-        option_d="4",
-        correct_option="C",
-        marks=1
-    )
-
-    q3 = Question(
-        quiz_id=quiz_gravity.id,
-        question_text="What is the approximate acceleration due to gravity on Earth's surface?",
-        option_a="9.8 m/s^2",
-        option_b="5.5 m/s^2",
-        option_c="12.0 m/s^2",
-        option_d="1.6 m/s^2",
-        correct_option="A",
-        marks=2
-    )
-
-    db.session.add_all([q1, q2, q3])
-    db.session.commit()
-    print("- Seeded Questions for both quizzes")
     print("Database seeding completed successfully!")
 
 if __name__ == "__main__":

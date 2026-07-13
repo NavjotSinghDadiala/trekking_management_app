@@ -10,7 +10,7 @@
                 <div class="text-center mb-4">
                     <i class="bi bi-person-plus text-success fs-1"></i>
                     <h2 class="mt-2 fw-bold text-dark">Create Account</h2>
-                    <p class="text-muted">Start your trekking journey or join as a guide</p>
+                    <p class="text-muted">Start booking treks or join as a guide</p>
                 </div>
                 
                 <form method="POST">
@@ -33,17 +33,27 @@
                     </div>
 
                     <!-- Role Dropdown Selector -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label for="role" class="form-label fw-semibold">Register As</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                            <select class="form-select" id="role" name="role" required>
+                            <select class="form-select" id="role" name="role" onchange="toggleStaffFields(this.value)" required>
                                 <option value="user" selected>User (Trekker) - Immediate Access</option>
                                 <option value="staff">Staff (Guide) - Requires Admin Approval</option>
                             </select>
                         </div>
-                        <div class="form-text text-muted mt-1">
-                            <i class="bi bi-info-circle me-1"></i>Staff accounts cannot log in until approved by an administrator.
+                    </div>
+
+                    <!-- Staff Details (Shown conditionally via simple inline JS) -->
+                    <div id="staff-fields" style="display: none;" class="p-3 mb-3 bg-light rounded border">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-card-text text-success me-1"></i>Guide Profile Details</h5>
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name">
+                        </div>
+                        <div class="mb-0">
+                            <label for="contact_details" class="form-label fw-semibold">Contact Details</label>
+                            <textarea class="form-control" id="contact_details" name="contact_details" rows="2" placeholder="Email, phone, address, etc."></textarea>
                         </div>
                     </div>
 
@@ -62,4 +72,22 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tiny inline JavaScript to toggle guide profile fields dynamically
+    function toggleStaffFields(role) {
+        var staffFields = document.getElementById("staff-fields");
+        var nameInput = document.getElementById("name");
+        
+        if (role === "staff") {
+            staffFields.style.display = "block";
+            nameInput.required = true;
+        } else {
+            staffFields.style.display = "none";
+            nameInput.required = false;
+        }
+    }
+</script>
 {% endblock %}
