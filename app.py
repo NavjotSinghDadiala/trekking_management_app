@@ -1,79 +1,57 @@
-# pyrefly: ignore [missing-import]
-from flask import Flask, render_template, request, redirect, url_for, session
-# pyrefly: ignore [missing-import]
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template
+from extensions import db, login_manager
+from models import User
 
+# Import Blueprints
+from routes.auth import auth
+from routes.admin import admin
+from routes.staff import staff
+from routes.user import user
+
+# Initialize Flask application
 app = Flask(__name__)
-app.secret_key = "abc-secret-key"
+
+# Basic configuration
+app.secret_key = "abc-secret-key"  # Used for session cookies and flash messages
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
+# Initialize database and login extensions with Flask app context
+db.init_app(app)
+login_manager.init_app(app)
 
-    def __repr__(self):
-        return f"<User {self.username}>"
 
+# Register Blueprints
+app.register_blueprint(auth)
+app.register_blueprint(admin)
+app.register_blueprint(staff)
+app.register_blueprint(user)
+
+
+# 1. Main Home / Landing Route
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
 
-        new_user = User(username=username, password=password)
-        db.session.add(new_user)
+# 2. Programmatic Table Creation and Seeding Default Admin on Startup
+with app.app_context():
+    # Automatically create tables inside site.db if they are not already created
+    db.create_all()
+    
+    # Ensure a pre-existing Admin user exists in the database
+    if not User.query.filter_by(username="admin").first():
+        admin_user = User(
+            username="admin",
+            password="admin",
+            role="admin",
+            is_approved=True,
+            is_blacklisted=False
+        )
+        db.session.add(admin_user)
         db.session.commit()
+        print("Default admin user ('admin' / 'admin') pre-created programmatically.")
 
-        return redirect(url_for("login"))
-    return render_template("register.html")
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        user = User.query.filter_by(username=username, password=password).first()
-        if user:
-            session["user"] = user.username
-            if user.username == "admin":
-                return redirect(url_for("admin"))
-            return redirect(url_for("user"))
-        else:
-            return "Invalid credentials"
-    return render_template("login.html")
-
-
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect(url_for("home"))
-
-@app.route("/admin")
-def admin():
-    if "user" not in session or session["user"] != "admin":
-        return redirect(url_for("login"))
-    return render_template("admin_dashboard.html")
-
-@app.route("/user")
-def user():
-    if "user" not in session:
-        return redirect(url_for("login"))
-    user = User.query.filter_by(username=session["user"]).first()
-    return render_template("user_dashboard.html", user=user)
-
+# Run the development server
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        if not User.query.filter_by(username="admin").first():
-            admin_user = User(username="admin", password="admin")
-            db.session.add(admin_user)
-            db.session.commit()
     app.run(debug=True)
