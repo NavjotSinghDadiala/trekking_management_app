@@ -17,21 +17,23 @@ db.init_app(app)
 def seed_database():
     print("Initializing programmatic database creation inside site.db...")
     
-    # 1. Drop existing tables to clear old schemas (e.g. the old education/quiz models)
+    # 1. Drop existing tables to clear old schemas
     db.drop_all()
     
-    # 2. Create the tables programmatically based on our new models.py definition
+    # 2. Create the tables programmatically based on our updated models.py definition
     db.create_all()
     print("Database tables created successfully!")
 
     # 3. Create Seed Data
     print("Seeding initial database content...")
 
-    # A. Users (Admin, Staff, Student)
+    # A. Users (Admin, Staff, Trekker)
     admin_user = User(
         username="admin", 
         password="admin", 
         role="admin", 
+        email="admin@trekking.com",
+        full_name="System Admin",
         is_approved=True
     )
     
@@ -39,6 +41,8 @@ def seed_database():
         username="guide1", 
         password="guide1", 
         role="staff", 
+        email="rohan@trekking.com",
+        full_name="Rohan Sharma",
         is_approved=True
     )
     
@@ -46,6 +50,8 @@ def seed_database():
         username="guide2", 
         password="guide2", 
         role="staff", 
+        email="aarav@trekking.com",
+        full_name="Aarav Patel",
         is_approved=False
     )
     
@@ -53,6 +59,8 @@ def seed_database():
         username="trekker1", 
         password="trekker1", 
         role="user", 
+        email="amit@trekking.com",
+        full_name="Amit Sharma",
         is_approved=True
     )
 
@@ -81,50 +89,69 @@ def seed_database():
 
     # C. Treks
     trek1 = Trek(
-        name="Kedarkantha Winter Trek",
-        location="Uttarakhand",
-        difficulty="Moderate",
-        duration=6,
+        name="Everest Base Camp",
+        location="Nepal",
+        difficulty="Hard",
+        duration=12,
+        description="A challenging walk of a lifetime to the base of the world's highest peak, Everest, passing through Sherpa villages and monasteries.",
         max_slots=20,
         available_slots=20,
         assigned_staff_id=approved_staff.id,
         status="Open",
-        start_date=date(2026, 12, 15),
-        end_date=date(2026, 12, 21),
-        price=8500.0
+        start_date=date(2026, 5, 20),
+        end_date=date(2026, 5, 31),
+        price=85000.0
     )
 
     trek2 = Trek(
-        name="Triund Trail Weekend",
-        location="Dharamshala",
-        difficulty="Easy",
-        duration=2,
+        name="Roopkund Trek",
+        location="Uttarakhand",
+        difficulty="Moderate",
+        duration=15,
+        description="Famous for the high altitude Roopkund Lake where ancient human skeletons are scattered along the shore, set in Alpine meadows.",
         max_slots=15,
         available_slots=15,
         assigned_staff_id=approved_staff.id,
         status="Open",
-        start_date=date(2026, 11, 5),
-        end_date=date(2026, 11, 7),
-        price=2500.0
+        start_date=date(2026, 6, 10),
+        end_date=date(2026, 6, 25),
+        price=15000.0
     )
 
     trek3 = Trek(
-        name="Roopkund Expedition",
-        location="Chamoli",
-        difficulty="Hard",
-        duration=8,
-        max_slots=10,
-        available_slots=10,
+        name="Hampata Pass",
+        location="Himachal",
+        difficulty="Moderate",
+        duration=12,
+        description="A breathtaking pass crossing from the green valleys of Kullu to the stark, dry high-altitude desert of Spiti Valley.",
+        max_slots=20,
+        available_slots=20,
         assigned_staff_id=None,
-        status="Pending",
-        start_date=date(2026, 9, 10),
-        end_date=date(2026, 9, 18),
-        price=15000.0
+        status="Open",
+        start_date=date(2026, 7, 10),
+        end_date=date(2026, 7, 22),
+        price=9500.0
     )
 
     db.session.add_all([trek1, trek2, trek3])
     db.session.commit()
-    print("- Seeded Treks (Kedarkantha - Open, Triund - Open, Roopkund - Pending)")
+    print("- Seeded Treks (Everest Base Camp - Open, Roopkund - Open, Hampata Pass - Open)")
+
+    # D. Seed a sample booking to match recent bookings wireframe stats
+    booking1 = Booking(
+        user_id=trekker_user.id,
+        trek_id=trek1.id,
+        num_tickets=1,
+        total_price=85000.0,
+        status="Booked",
+        payment_status="Paid"
+    )
+    # Deduct slot
+    trek1.available_slots -= 1
+    
+    db.session.add(booking1)
+    db.session.commit()
+    print("- Seeded Bookings (Amit Sharma booked Everest Base Camp)")
 
     print("Database seeding completed successfully!")
 

@@ -1,23 +1,18 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_required, current_user
+from flask_login import current_user
 from extensions import db
 from models import User, Trek, Booking
 
 # Define the staff Blueprint
 staff = Blueprint("staff", __name__, url_prefix="/staff")
 
-# Helper function to check if the current user is approved staff
-def is_staff_user():
-    return current_user.is_authenticated and current_user.role == "staff" and current_user.is_approved
-
 
 # 1. Staff Dashboard Route
 @staff.route("/dashboard")
-@login_required
 def dashboard():
-    if not is_staff_user():
+    if not current_user.is_authenticated or current_user.role != "staff" or not current_user.is_approved:
         flash("Unauthorized. Approved Staff access required.", "danger")
-        return redirect(url_for("home"))
+        return redirect(url_for("auth.login"))
 
     # Fetch treks assigned to this specific staff member
     assigned_treks = Trek.query.filter_by(assigned_staff_id=current_user.id).all()
@@ -36,11 +31,10 @@ def dashboard():
 
 # 2. View and Manage Trek Details (slots, status, participant list)
 @staff.route("/trek/manage/<int:trek_id>", methods=["GET"])
-@login_required
 def manage_trek(trek_id):
-    if not is_staff_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "staff" or not current_user.is_approved:
+        flash("Unauthorized. Approved Staff access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     trek = Trek.query.get_or_404(trek_id)
 
@@ -57,11 +51,10 @@ def manage_trek(trek_id):
 
 # 3. Update Trek Slots
 @staff.route("/trek/update_slots/<int:trek_id>", methods=["POST"])
-@login_required
 def update_slots(trek_id):
-    if not is_staff_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "staff" or not current_user.is_approved:
+        flash("Unauthorized. Approved Staff access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     trek = Trek.query.get_or_404(trek_id)
 
@@ -93,11 +86,10 @@ def update_slots(trek_id):
 
 # 4. Update Trek Status (Open/Closed/Ongoing/Completed)
 @staff.route("/trek/update_status/<int:trek_id>", methods=["POST"])
-@login_required
 def update_status(trek_id):
-    if not is_staff_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "staff" or not current_user.is_approved:
+        flash("Unauthorized. Approved Staff access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     trek = Trek.query.get_or_404(trek_id)
 

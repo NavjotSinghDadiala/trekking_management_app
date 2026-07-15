@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, current_user
 from extensions import db, login_manager
 from models import User, StaffProfile
 
@@ -71,15 +71,21 @@ def register():
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
+        full_name = request.form.get("full_name", "").strip()
+        email = request.form.get("email", "").strip()
         password = request.form.get("password", "").strip()
+        confirm_password = request.form.get("confirm_password", "").strip()
         role = request.form.get("role", "user").strip()
 
         # Extra profile details for staff guides
-        name = request.form.get("name", "").strip()
         contact_details = request.form.get("contact_details", "").strip()
 
-        if not username or not password:
-            flash("Username and password are required.", "danger")
+        if not username or not password or not full_name or not email:
+            flash("All fields (Username, Full Name, Email, Password) are required.", "danger")
+            return redirect(url_for("auth.register"))
+
+        if password != confirm_password:
+            flash("Passwords do not match.", "danger")
             return redirect(url_for("auth.register"))
 
         if len(password) < 4:
@@ -87,24 +93,27 @@ def register():
             return redirect(url_for("auth.register"))
 
         # Verify username unique constraint
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
+        if User.query.filter_by(username=username).first():
             flash("Username already exists. Please choose another.", "danger")
+            return redirect(url_for("auth.register"))
+
+        # Verify email unique constraint
+        if User.query.filter_by(email=email).first():
+            flash("Email already registered. Please choose another.", "danger")
             return redirect(url_for("auth.register"))
 
         # Set default flags
         is_approved = True
         if role == "staff":
             is_approved = False  # Guides need admin approval
-            if not name:
-                flash("Full name is required for guide registration.", "danger")
-                return redirect(url_for("auth.register"))
 
         # Create the User record
         new_user = User(
             username=username,
             password=password,
             role=role,
+            email=email,
+            full_name=full_name,
             is_approved=is_approved,
             is_blacklisted=False
         )
@@ -115,8 +124,8 @@ def register():
         if role == "staff":
             new_profile = StaffProfile(
                 user_id=new_user.id,
-                name=name,
-                contact_details=contact_details,
+                name=full_name,
+                contact_details=contact_details or f"Email: {email}",
                 status="Pending"
             )
             db.session.add(new_profile)
@@ -135,8 +144,9 @@ def register():
 
 # 3. Logout Route
 @auth.route("/logout")
-@login_required
 def logout():
+    if not current_user.is_authenticated:
+        return redirect(url_for("home"))
     logout_user()
     flash("You have successfully logged out.", "success")
     return redirect(url_for("home"))

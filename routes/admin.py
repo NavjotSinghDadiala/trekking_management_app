@@ -1,24 +1,19 @@
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_required, current_user
+from flask_login import current_user
 from extensions import db
 from models import User, StaffProfile, Trek, Booking
 
 # Define the admin Blueprint
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
-# Helper function to check if the current user is an admin
-def is_admin_user():
-    return current_user.is_authenticated and current_user.role == "admin"
-
 
 # 1. Admin Dashboard Route (Stats, lists, approvals, search)
 @admin.route("/dashboard")
-@login_required
 def dashboard():
-    if not is_admin_user():
+    if not current_user.is_authenticated or current_user.role != "admin":
         flash("Unauthorized. Admin access required.", "danger")
-        return redirect(url_for("home"))
+        return redirect(url_for("auth.login"))
 
     # Stats counters
     trek_count = Trek.query.count()
@@ -77,11 +72,10 @@ def dashboard():
 
 # 2. Staff Approval Actions
 @admin.route("/staff/approve/<int:staff_id>", methods=["POST"])
-@login_required
 def approve_staff(staff_id):
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     staff = User.query.get_or_404(staff_id)
     if staff.role == "staff":
@@ -95,11 +89,10 @@ def approve_staff(staff_id):
 
 
 @admin.route("/staff/reject/<int:staff_id>", methods=["POST"])
-@login_required
 def reject_staff(staff_id):
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     staff = User.query.get_or_404(staff_id)
     username = staff.username
@@ -112,11 +105,10 @@ def reject_staff(staff_id):
 
 # 3. User & Staff Deactivation / Blacklisting
 @admin.route("/user/blacklist/<int:user_id>", methods=["POST"])
-@login_required
 def blacklist_user(user_id):
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     user = User.query.get_or_404(user_id)
     user.is_blacklisted = True
@@ -131,11 +123,10 @@ def blacklist_user(user_id):
 
 
 @admin.route("/user/unblacklist/<int:user_id>", methods=["POST"])
-@login_required
 def unblacklist_user(user_id):
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     user = User.query.get_or_404(user_id)
     user.is_blacklisted = False
@@ -151,11 +142,10 @@ def unblacklist_user(user_id):
 
 # 4. Trek CRUD Operations
 @admin.route("/trek/create", methods=["GET", "POST"])
-@login_required
 def create_trek():
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
@@ -168,6 +158,7 @@ def create_trek():
         start_date_str = request.form.get("start_date", "")
         end_date_str = request.form.get("end_date", "")
         price = request.form.get("price", "0").strip()
+        description = request.form.get("description", "").strip()
 
         if not name or not location or not start_date_str or not end_date_str:
             flash("All fields are required.", "danger")
@@ -189,6 +180,7 @@ def create_trek():
             location=location,
             difficulty=difficulty,
             duration=int(duration),
+            description=description,
             max_slots=int(max_slots),
             available_slots=int(max_slots),  # Starts with full capacity
             assigned_staff_id=staff_id,
@@ -208,11 +200,10 @@ def create_trek():
 
 
 @admin.route("/trek/edit/<int:trek_id>", methods=["GET", "POST"])
-@login_required
 def edit_trek(trek_id):
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     trek = Trek.query.get_or_404(trek_id)
 
@@ -227,6 +218,7 @@ def edit_trek(trek_id):
         start_date_str = request.form.get("start_date", "")
         end_date_str = request.form.get("end_date", "")
         price = request.form.get("price", "0").strip()
+        description = request.form.get("description", "").strip()
 
         if not name or not location or not start_date_str or not end_date_str:
             flash("All fields are required.", "danger")
@@ -252,6 +244,7 @@ def edit_trek(trek_id):
         trek.location = location
         trek.difficulty = difficulty
         trek.duration = int(duration)
+        trek.description = description
         trek.max_slots = new_max
         trek.available_slots = new_max - active_bookings_count
         trek.assigned_staff_id = int(assigned_staff_id) if assigned_staff_id else None
@@ -269,11 +262,10 @@ def edit_trek(trek_id):
 
 
 @admin.route("/trek/delete/<int:trek_id>", methods=["POST"])
-@login_required
 def delete_trek(trek_id):
-    if not is_admin_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     trek = Trek.query.get_or_404(trek_id)
     name = trek.name

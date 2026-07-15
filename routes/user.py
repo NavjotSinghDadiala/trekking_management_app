@@ -1,24 +1,19 @@
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_required, current_user
+from flask_login import current_user
 from extensions import db
 from models import User, Trek, Booking
 
 # Define the user Blueprint
 user = Blueprint("user", __name__, url_prefix="/user")
 
-# Helper function to check if the current user is a trekker
-def is_trekker_user():
-    return current_user.is_authenticated and current_user.role == "user"
-
 
 # 1. User Dashboard & Trek Browsing Route
 @user.route("/dashboard")
-@login_required
 def dashboard():
-    if not is_trekker_user():
+    if not current_user.is_authenticated or current_user.role != "user":
         flash("Unauthorized. Trekker access required.", "danger")
-        return redirect(url_for("home"))
+        return redirect(url_for("auth.login"))
 
     # Fetch filters from request parameters
     search_location = request.args.get("location", "").strip()
@@ -49,11 +44,10 @@ def dashboard():
 
 # 2. Book a Trek
 @user.route("/book/<int:trek_id>", methods=["POST"])
-@login_required
 def book_trek(trek_id):
-    if not is_trekker_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "user":
+        flash("Unauthorized. Trekker access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     trek = Trek.query.get_or_404(trek_id)
 
@@ -100,11 +94,10 @@ def book_trek(trek_id):
 
 # 3. Cancel Booking Route
 @user.route("/booking/cancel/<int:booking_id>", methods=["POST"])
-@login_required
 def cancel_booking(booking_id):
-    if not is_trekker_user():
-        flash("Unauthorized.", "danger")
-        return redirect(url_for("home"))
+    if not current_user.is_authenticated or current_user.role != "user":
+        flash("Unauthorized. Trekker access required.", "danger")
+        return redirect(url_for("auth.login"))
 
     # Secure query: ensure the booking belongs to the current logged-in trekker
     booking = Booking.query.filter_by(id=booking_id, user_id=current_user.id).first_or_404()
@@ -130,8 +123,10 @@ def cancel_booking(booking_id):
 
 # 4. Edit Profile Route (Simple beginner implementation)
 @user.route("/profile/edit", methods=["GET", "POST"])
-@login_required
 def edit_profile():
+    if not current_user.is_authenticated:
+        flash("Please log in first.", "danger")
+        return redirect(url_for("auth.login"))
     if request.method == "POST":
         password = request.form.get("password", "").strip()
 
@@ -153,3 +148,39 @@ def edit_profile():
             return redirect(url_for("user.dashboard"))
 
     return render_template("user_edit_profile.html")
+
+
+# 5. Trek Details Route
+@user.route("/trek/<int:trek_id>")
+def trek_details(trek_id):
+    if not current_user.is_authenticated or current_user.role != "user":
+        flash("Unauthorized. Trekker access required.", "danger")
+        return redirect(url_for("auth.login"))
+    
+    trek = Trek.query.get_or_404(trek_id)
+    return render_template("user_trek_details.html", trek=trek)
+
+
+# 6. Active Bookings Route
+@user.route("/my-bookings")
+def my_bookings():
+    if not current_user.is_authenticated or current_user.role != "user":
+        flash("Unauthorized. Trekker access required.", "danger")
+        return redirect(url_for("auth.login"))
+    
+    bookings = Booking.query.filter_by(user_id=current_user.id, status="Booked").order_by(Booking.booking_date.desc()).all()
+    return render_template("user_my_bookings.html", bookings=bookings)
+
+
+# 7. Trekking History Route
+@user.route("/history")
+def history():
+    if not current_user.is_authenticated or current_user.role != "user":
+        flash("Unauthorized. Trekker access required.", "danger")
+        return redirect(url_for("auth.login"))
+    
+    bookings = Booking.query.filter(
+        (Booking.user_id == current_user.id) & 
+        (Booking.status.in_(["Completed", "Cancelled"]))
+    ).order_by(Booking.booking_date.desc()).all()
+    return render_template("user_history.html", bookings=bookings)

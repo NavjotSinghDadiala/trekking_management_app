@@ -9,11 +9,29 @@
             <div class="card-body">
                 <div class="text-center mb-4">
                     <i class="bi bi-person-plus text-success fs-1"></i>
-                    <h2 class="mt-2 fw-bold text-dark">Create Account</h2>
-                    <p class="text-muted">Start booking treks or join as a guide</p>
+                    <h2 class="mt-2 fw-bold text-dark">Register</h2>
+                    <p class="text-muted">Create a TrekManager account</p>
                 </div>
                 
                 <form method="POST">
+                    <!-- Full Name Input -->
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label fw-semibold">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter your full name" required>
+                        </div>
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
+                        </div>
+                    </div>
+
                     <!-- Username Input -->
                     <div class="mb-3">
                         <label for="username" class="form-label fw-semibold">Username</label>
@@ -32,28 +50,25 @@
                         </div>
                     </div>
 
-                    <!-- Role Dropdown Selector -->
+                    <!-- Confirm Password Input -->
                     <div class="mb-3">
-                        <label for="role" class="form-label fw-semibold">Register As</label>
+                        <label for="confirm_password" class="form-label fw-semibold">Confirm Password</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                            <select class="form-select" id="role" name="role" onchange="toggleStaffFields(this.value)" required>
-                                <option value="user" selected>User (Trekker) - Immediate Access</option>
-                                <option value="staff">Staff (Guide) - Requires Admin Approval</option>
-                            </select>
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
                         </div>
                     </div>
 
-                    <!-- Staff Details (Shown conditionally via simple inline JS) -->
-                    <div id="staff-fields" style="display: none;" class="p-3 mb-3 bg-light rounded border">
-                        <h5 class="fw-bold mb-3"><i class="bi bi-card-text text-success me-1"></i>Guide Profile Details</h5>
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name">
-                        </div>
-                        <div class="mb-0">
-                            <label for="contact_details" class="form-label fw-semibold">Contact Details</label>
-                            <textarea class="form-control" id="contact_details" name="contact_details" rows="2" placeholder="Email, phone, address, etc."></textarea>
+                    <!-- Role Dropdown Selector -->
+                    <div class="mb-4">
+                        <label for="role" class="form-label fw-semibold">I am a...</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="" disabled selected>-- Select Role --</option>
+                                <option value="user">User (Trekker)</option>
+                                <option value="staff">Trek Staff (Guide)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -66,28 +81,10 @@
                 </form>
 
                 <div class="text-center mt-3">
-                    <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}" class="text-success fw-bold">Sign In</a></p>
+                    <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}" class="text-success fw-bold">Login here</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Tiny inline JavaScript to toggle guide profile fields dynamically
-    function toggleStaffFields(role) {
-        var staffFields = document.getElementById("staff-fields");
-        var nameInput = document.getElementById("name");
-        
-        if (role === "staff") {
-            staffFields.style.display = "block";
-            nameInput.required = true;
-        } else {
-            staffFields.style.display = "none";
-            nameInput.required = false;
-        }
-    }
-</script>
 {% endblock %}

@@ -10,6 +10,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100), nullable=False)  # Plain text for beginner simplicity
     role = db.Column(db.String(20), nullable=False, default="user")  # 'admin', 'staff', 'user'
     
+    # New fields to match the wireframe
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    full_name = db.Column(db.String(150), nullable=False)
+
     # Staff status check flags
     is_approved = db.Column(db.Boolean, nullable=False, default=True)  # Staff requires Admin approval
     is_blacklisted = db.Column(db.Boolean, nullable=False, default=False)  # Admin can blacklist users/staff
@@ -22,13 +26,11 @@ class User(db.Model, UserMixin):
     assigned_treks = db.relationship("Trek", backref="staff", lazy=True)
 
     # Link to the detailed profile if they are a Staff member
-    # uselist=False creates a One-to-One association with StaffProfile
     staff_profile = db.relationship("StaffProfile", backref="user", uselist=False, cascade="all, delete-orphan")
 
-    # Flask-Login checks is_active. If False, login is blocked.
-    # We block login if they are NOT approved OR if they are blacklisted.
     @property
     def is_active(self):
+        # Flask-Login check: block logins for unapproved staff or blacklisted users
         return self.is_approved and not self.is_blacklisted
 
     def __repr__(self):
@@ -57,6 +59,9 @@ class Trek(db.Model):
     difficulty = db.Column(db.String(50), nullable=False)  # 'Easy', 'Moderate', 'Hard'
     duration = db.Column(db.Integer, nullable=False)  # Duration in days
     
+    # New description field to match the wireframe
+    description = db.Column(db.Text, nullable=True)
+
     # Slot details
     max_slots = db.Column(db.Integer, nullable=False)
     available_slots = db.Column(db.Integer, nullable=False)
