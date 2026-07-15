@@ -140,6 +140,21 @@ def unblacklist_user(user_id):
     return redirect(url_for("admin.dashboard"))
 
 
+@admin.route("/user/delete/<int:user_id>", methods=["POST"])
+def delete_user(user_id):
+    if not current_user.is_authenticated or current_user.role != "admin":
+        flash("Unauthorized. Admin access required.", "danger")
+        return redirect(url_for("auth.login"))
+
+    user = User.query.get_or_404(user_id)
+    username = user.username
+    db.session.delete(user)
+    db.session.commit()
+    
+    flash(f"User/Guide '{username}' has been successfully deleted.", "success")
+    return redirect(url_for("admin.dashboard"))
+
+
 # 4. Trek CRUD Operations
 @admin.route("/trek/create", methods=["GET", "POST"])
 def create_trek():

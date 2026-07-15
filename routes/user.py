@@ -51,6 +51,12 @@ def book_trek(trek_id):
 
     trek = Trek.query.get_or_404(trek_id)
 
+    # Validation 1.5: Prevent duplicate trek bookings
+    existing_booking = Booking.query.filter_by(user_id=current_user.id, trek_id=trek.id, status="Booked").first()
+    if existing_booking:
+        flash("You have already booked this trek. Duplicate bookings are not allowed.", "warning")
+        return redirect(url_for("user.dashboard"))
+
     # Validation 1: Allow users to book only if trek status is 'Open'
     if trek.status != "Open":
         flash("Sorry, this trek is not open for bookings.", "danger")

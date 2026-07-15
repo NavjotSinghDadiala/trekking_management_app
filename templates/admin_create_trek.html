@@ -5,108 +5,103 @@
 {% block content %}
 <div class="row justify-content-center my-4">
     <div class="col-md-8 col-lg-7">
-        <div class="card shadow-sm border-0 p-4 bg-white">
-            <div class="card-body">
-                <!-- Header -->
-                <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary me-3 rounded-pill">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
-                    <h3 class="fw-bold mb-0 text-success"><i class="bi bi-plus-circle me-1"></i>Create New Trek</h3>
+        <div class="border p-4 bg-white">
+            <!-- Header -->
+            <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary me-3">
+                    Back
+                </a>
+                <h3 class="mb-0">Create New Trek</h3>
+            </div>
+
+            <form method="POST">
+                <!-- Name & Location -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Trek Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Kedarkantha Winter Trek" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="location" class="form-label">Location / Region</label>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="e.g. Uttarakhand, India" required>
+                    </div>
                 </div>
 
-                <form method="POST">
-                    <!-- Name & Location -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label fw-semibold">Trek Name</label>
-                            <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Kedarkantha Winter Trek" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="location" class="form-label fw-semibold">Location / Region</label>
-                            <input type="text" class="form-control" id="location" name="location" placeholder="e.g. Uttarakhand, India" required>
-                        </div>
+                <!-- Difficulty & Duration -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="difficulty" class="form-label">Difficulty Level</label>
+                        <select class="form-select" id="difficulty" name="difficulty" required>
+                            <option value="Easy">Easy (Beginner Trails)</option>
+                            <option value="Moderate" selected>Moderate (Medium Ascent)</option>
+                            <option value="Hard">Hard (Alpine/High Altitude)</option>
+                        </select>
                     </div>
-
-                    <!-- Difficulty & Duration -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="difficulty" class="form-label fw-semibold">Difficulty Level</label>
-                            <select class="form-select" id="difficulty" name="difficulty" required>
-                                <option value="Easy">Easy (Beginner Trails)</option>
-                                <option value="Moderate" selected>Moderate (Medium Ascent)</option>
-                                <option value="Hard">Hard (Alpine/High Altitude)</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="duration" class="form-label fw-semibold">Duration (in Days)</label>
-                            <input type="number" class="form-control" id="duration" name="duration" min="1" placeholder="e.g. 6" required>
-                        </div>
+                    <div class="col-md-6">
+                        <label for="duration" class="form-label">Duration (in Days)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" min="1" placeholder="e.g. 6" required>
                     </div>
+                </div>
 
-                    <!-- Dates -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="start_date" class="form-label fw-semibold">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="end_date" class="form-label fw-semibold">End Date</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date" required>
-                        </div>
+                <!-- Dates -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" required>
                     </div>
-
-                    <!-- Capacity & Price -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="max_slots" class="form-label fw-semibold">Maximum Slots (Capacity)</label>
-                            <input type="number" class="form-control" id="max_slots" name="max_slots" min="1" placeholder="e.g. 20" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="price" class="form-label fw-semibold">Price per Trekker (₹)</label>
-                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" placeholder="e.g. 8500" required>
-                        </div>
+                    <div class="col-md-6">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" required>
                     </div>
+                </div>
 
-                    <!-- Assigned Staff & Status -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="assigned_staff_id" class="form-label fw-semibold">Assigned Staff Guide</label>
-                            <select class="form-select" id="assigned_staff_id" name="assigned_staff_id">
-                                <option value="">-- No Guide Assigned Yet --</option>
-                                {% for guide in approved_guides %}
-                                    <option value="{{ guide.id }}">{{ guide.staff_profile.name }} ({{ guide.username }})</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="status" class="form-label fw-semibold">Initial Trek Status</label>
-                            <select class="form-select" id="status" name="status" required>
-                                <option value="Pending" selected>Pending Approval</option>
-                                <option value="Approved">Approved</option>
-                                <option value="Open">Open (Accepting Bookings)</option>
-                                <option value="Closed">Closed</option>
-                                <option value="Completed">Completed</option>
-                            </select>
-                        </div>
+                <!-- Capacity & Price -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="max_slots" class="form-label">Maximum Slots (Capacity)</label>
+                        <input type="number" class="form-control" id="max_slots" name="max_slots" min="1" placeholder="e.g. 20" required>
                     </div>
-
-                    <!-- Description -->
-                    <div class="mb-4">
-                        <label for="description" class="form-label fw-semibold">Trek Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Provide a brief description of the trail, landmarks, and requirements..."></textarea>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price per Trekker (₹)</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" placeholder="e.g. 8500" required>
                     </div>
+                </div>
 
-                    <!-- Action Buttons -->
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
-                        <button type="submit" class="btn btn-success px-4 rounded-pill fw-semibold shadow-sm">
-                            <i class="bi bi-check-circle-fill me-1"></i>Create Trek
-                        </button>
+                <!-- Assigned Staff & Status -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="assigned_staff_id" class="form-label">Assigned Staff Guide</label>
+                        <select class="form-select" id="assigned_staff_id" name="assigned_staff_id">
+                            <option value="">-- No Guide Assigned Yet --</option>
+                            {% for guide in approved_guides %}
+                                <option value="{{ guide.id }}">{{ guide.staff_profile.name }} ({{ guide.username }})</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                </form>
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Initial Trek Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="Pending" selected>Pending Approval</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Open">Open (Accepting Bookings)</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
 
-            </div>
+                <!-- Description -->
+                <div class="mb-4">
+                    <label for="description" class="form-label">Trek Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Provide a brief description of the trail, landmarks, and requirements..."></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end border-top pt-3">
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-dark btn-sm">Create Trek</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

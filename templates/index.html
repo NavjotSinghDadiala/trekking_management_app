@@ -1,100 +1,53 @@
 {% extends 'base.html' %}
 
-{% block title %}Explore Outdoors - TrekManager{% endblock %}
-
-{% block extra_css %}
-<style>
-    /* Custom hero section styling */
-    .hero-section {
-        background: linear-gradient(rgba(30, 63, 32, 0.75), rgba(15, 31, 16, 0.85)), 
-                    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80') no-repeat center center;
-        background-size: cover;
-        color: white;
-        padding: 100px 0;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-</style>
-{% endblock %}
+{% block title %}Home - TrekManager{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <!-- Hero Block -->
-    <div class="hero-section text-center mb-5">
-        <div class="row justify-content-center py-4">
-            <div class="col-lg-8">
-                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill uppercase fw-bold mb-3">IIT Madras Graded Project</span>
-                <h1 class="display-4 fw-extrabold mb-3">TrekManager</h1>
-                <p class="lead mb-4 fs-4">A simple, role-based platform to manage trekking routes, schedule trek slots, register staff guides, and book adventures.</p>
-                
-                {% if not current_user.is_authenticated %}
-                    <div class="d-flex gap-3 justify-content-center">
-                        <a href="{{ url_for('auth.register') }}" class="btn btn-accent btn-lg px-4 rounded-pill shadow">
-                            <i class="bi bi-person-plus-fill me-2"></i>Register Now
-                        </a>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4 rounded-pill">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-                        </a>
-                    </div>
-                {% else %}
-                    <div class="bg-white bg-opacity-10 p-3 rounded-4 d-inline-block border border-white border-opacity-10 backdrop-blur">
-                        <span class="fs-5 text-white">Welcome back, <strong>{{ current_user.username }}</strong>! Go to your dashboard to get started.</span>
-                        <div class="mt-2">
-                            {% if current_user.role == 'admin' %}
-                                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning rounded-pill mt-2">Go to Admin Dashboard</a>
-                            {% elif current_user.role == 'staff' %}
-                                <a href="{{ url_for('staff.dashboard') }}" class="btn btn-success rounded-pill mt-2">Go to Guide Dashboard</a>
-                            {% else %}
-                                <a href="{{ url_for('user.dashboard') }}" class="btn btn-success rounded-pill mt-2">Go to Trekker Dashboard</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Feature Cards Section -->
-    <div class="row g-4 mb-5">
-        <h2 class="text-center mb-2 fw-bold text-dark">One Platform, Three Portals</h2>
-        <p class="text-center text-muted col-md-8 mx-auto mb-4">A lightweight, fully modular dashboard interface catering specifically to hikers, guide guides, and system administrators.</p>
+<div class="row justify-content-center">
+    <div class="col-md-10 text-center my-5">
+        <h1 class="mb-4">Trekking Management Application</h1>
+        <p class="lead">A basic portal to manage trekking routes, guide assignments, slots, and bookings.</p>
         
-        <!-- User Portal Info -->
-        <div class="col-md-4">
-            <div class="card h-100 p-4 border-0 bg-white">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
-                        <i class="bi bi-compass fs-3"></i>
-                    </div>
-                    <h4 class="m-0 fw-bold">Trekkers (Users)</h4>
-                </div>
-                <p class="text-muted">Explore trails by difficulty or location, view scheduled treks, book multiple tickets, and manage booking history with easy cancellations.</p>
-            </div>
-        </div>
+        <hr class="my-4">
 
-        <!-- Staff Portal Info -->
-        <div class="col-md-4">
-            <div class="card h-100 p-4 border-0 bg-white">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded-3 text-warning me-3">
-                        <i class="bi bi-person-fill-gear fs-3"></i>
-                    </div>
-                    <h4 class="m-0 fw-bold">Guides (Staff)</h4>
-                </div>
-                <p class="text-muted">Register to lead hikes (requires Admin approval), view assigned trips, schedule/update slots, and monitor registered participants lists.</p>
+        {% if not current_user.is_authenticated %}
+            <div class="my-4">
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-dark me-2">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-dark">Register</a>
             </div>
-        </div>
-
-        <!-- Admin Portal Info -->
-        <div class="col-md-4">
-            <div class="card h-100 p-4 border-0 bg-white">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-danger bg-opacity-10 p-3 rounded-3 text-danger me-3">
-                        <i class="bi bi-shield-lock fs-3"></i>
-                    </div>
-                    <h4 class="m-0 fw-bold">Administrators</h4>
+        {% else %}
+            <div class="my-4 p-3 border bg-light rounded">
+                <p>Welcome back, <strong>{{ current_user.username }}</strong>!</p>
+                <div>
+                    {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-dark">Go to Admin Dashboard</a>
+                    {% elif current_user.role == 'staff' %}
+                        <a href="{{ url_for('staff.dashboard') }}" class="btn btn-dark">Go to Guide Dashboard</a>
+                    {% else %}
+                        <a href="{{ url_for('user.dashboard') }}" class="btn btn-dark">Go to Trekker Dashboard</a>
+                    {% endif %}
                 </div>
-                <p class="text-muted">Perform complete CRUD actions on Trekking Routes, approve/disapprove new Staff registrations, and review system-wide booking statistics.</p>
+            </div>
+        {% endif %}
+
+        <div class="row text-start mt-5">
+            <div class="col-md-4 mb-3">
+                <div class="p-3 border bg-white h-100">
+                    <h4 class="fw-bold">Trekkers (Users)</h4>
+                    <p class="text-muted small">Can browse open treks, filter them by difficulty and location, select the ticket count to book, track status, and view/cancel their own bookings history.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="p-3 border bg-white h-100">
+                    <h4 class="fw-bold">Trek Staff (Guides)</h4>
+                    <p class="text-muted small">Can register, view their assigned treks list, update available slots, view the registered hiker participants list, and change the trek status.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="p-3 border bg-white h-100">
+                    <h4 class="fw-bold">Admin</h4>
+                    <p class="text-muted small">Predefined user who can create, edit, or delete treks, assign guides, approve or delete staff, search system-wide databases, and activate/deactivate accounts.</p>
+                </div>
             </div>
         </div>
     </div>

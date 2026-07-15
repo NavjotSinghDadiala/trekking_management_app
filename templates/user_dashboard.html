@@ -5,99 +5,62 @@
 {% block content %}
 <div class="container my-4">
     <div class="row">
-        <!-- Sidebar Navigation (Matches wireframe user sidebar) -->
+        <!-- Sidebar Navigation -->
         <div class="col-md-3 mb-4">
-            <div class="card border-0 shadow-sm p-3 bg-white">
-                <div class="d-flex align-items-center mb-4 p-2 border-bottom">
-                    <i class="bi bi-person-circle fs-3 text-success me-2"></i>
-                    <div>
-                        <h6 class="fw-bold mb-0 text-dark">{{ current_user.full_name }}</h6>
-                        <small class="text-muted">Trekker</small>
-                    </div>
+            <div class="border p-3 bg-light">
+                <div class="pb-2 mb-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">{{ current_user.full_name }}</h6>
+                    <small class="text-muted">Trekker</small>
                 </div>
-                <div class="nav flex-column nav-pills">
-                    <a href="{{ url_for('user.dashboard') }}" class="nav-link active mb-2"><i class="bi bi-grid-fill me-2"></i>Dashboard</a>
-                    <a href="{{ url_for('user.dashboard') }}" class="nav-link mb-2"><i class="bi bi-compass-fill me-2"></i>Browse Treks</a>
-                    <a href="{{ url_for('user.my_bookings') }}" class="nav-link mb-2"><i class="bi bi-journal-bookmark-fill me-2"></i>My Bookings</a>
-                    <a href="{{ url_for('user.history') }}" class="nav-link mb-2"><i class="bi bi-clock-history me-2"></i>History</a>
-                    <a href="{{ url_for('user.edit_profile') }}" class="nav-link mb-2"><i class="bi bi-person-gear me-2"></i>Profile Settings</a>
-                    <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                <div class="nav flex-column">
+                    <a href="{{ url_for('user.dashboard') }}" class="nav-link text-dark py-1 px-0">Dashboard</a>
+                    <a href="{{ url_for('user.my_bookings') }}" class="nav-link text-dark py-1 px-0">My Bookings</a>
+                    <a href="{{ url_for('user.history') }}" class="nav-link text-dark py-1 px-0">History</a>
+                    <a href="{{ url_for('user.edit_profile') }}" class="nav-link text-dark py-1 px-0">Profile Settings</a>
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger py-1 px-0">Logout</a>
                 </div>
             </div>
         </div>
 
         <!-- Main Portal Panel -->
         <div class="col-md-9">
-            <!-- Welcome Banner -->
-            <div class="card border-0 shadow-sm p-4 bg-white mb-4">
-                <h2 class="fw-bold text-success mb-1">Welcome, {{ current_user.full_name }}!</h2>
-                <p class="text-muted mb-0">Browse and book your next mountaineering adventure.</p>
-            </div>
-
-            <!-- Filters Section -->
-            <div class="card border-0 shadow-sm mb-4 bg-white p-3">
-                <form method="GET" action="{{ url_for('user.dashboard') }}" class="row g-2 align-items-center">
-                    <div class="col-md-5">
-                        <input type="text" name="location" class="form-control rounded-pill" placeholder="Location..." value="{{ search_location }}">
-                    </div>
-                    <div class="col-md-4">
-                        <select name="difficulty" class="form-select rounded-pill">
-                            <option value="">Difficulty: All</option>
-                            <option value="Easy" {% if filter_difficulty == 'Easy' %}selected{% endif %}>Easy</option>
-                            <option value="Moderate" {% if filter_difficulty == 'Moderate' %}selected{% endif %}>Moderate</option>
-                            <option value="Hard" {% if filter_difficulty == 'Hard' %}selected{% endif %}>Hard</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-success rounded-pill fw-semibold w-100">
-                            <i class="bi bi-search me-1"></i>Search
-                        </button>
-                        {% if search_location or filter_difficulty %}
-                            <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary rounded-pill d-flex align-items-center justify-content-center px-3" title="Clear Filters">
-                                <i class="bi bi-x-lg"></i>
-                            </a>
-                        {% endif %}
-                    </div>
-                </form>
+            <!-- Welcome Header -->
+            <div class="border p-4 bg-white mb-4">
+                <h2>Welcome, {{ current_user.full_name }}!</h2>
+                <p class="text-muted small mb-0">Browse and book trekking trails from your dashboard.</p>
             </div>
 
             <!-- Available Treks Table -->
-            <div class="card border-0 shadow-sm p-4 bg-white mb-4">
-                <h4 class="fw-bold mb-3 text-success"><i class="bi bi-compass me-2"></i>Available Treks</h4>
+            <div class="border p-4 bg-white mb-4">
+                <h4 class="mb-3">Available Treks</h4>
                 
                 {% if not available_treks %}
-                    <div class="text-center py-4">
-                        <i class="bi bi-slash-circle fs-2 text-muted mb-2 d-block"></i>
-                        <h6 class="fw-semibold text-dark">No Treks Match Your Criteria</h6>
-                        <p class="text-muted small mb-0">Try clearing filters or search location queries.</p>
+                    <div class="text-center py-4 text-muted small">
+                        <p class="mb-0">No Treks Match Your Criteria</p>
                     </div>
                 {% else %}
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-bordered table-striped align-middle small">
                             <thead class="table-light">
                                 <tr>
                                     <th>Trek Name</th>
                                     <th>Location</th>
                                     <th>Difficulty</th>
                                     <th>Duration</th>
-                                    <th>Available Slots</th>
+                                    <th>Slots</th>
                                     <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for trek in available_treks %}
                                     <tr>
-                                        <td class="fw-bold text-dark">{{ trek.name }}</td>
-                                        <td><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ trek.location }}</td>
-                                        <td>
-                                            <span class="badge {% if trek.difficulty == 'Easy' %}bg-success{% elif trek.difficulty == 'Moderate' %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill">
-                                                {{ trek.difficulty }}
-                                            </span>
-                                        </td>
+                                        <td class="fw-bold">{{ trek.name }}</td>
+                                        <td>{{ trek.location }}</td>
+                                        <td>{{ trek.difficulty }}</td>
                                         <td>{{ trek.duration }} Days</td>
-                                        <td class="fw-bold text-success">{{ trek.available_slots }}</td>
+                                        <td>{{ trek.available_slots }} left</td>
                                         <td class="text-end">
-                                            <a href="{{ url_for('user.trek_details', trek_id=trek.id) }}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+                                            <a href="{{ url_for('user.trek_details', trek_id=trek.id) }}" class="btn btn-outline-dark btn-sm">
                                                 Book Now
                                             </a>
                                         </td>
@@ -109,21 +72,20 @@
                 {% endif %}
             </div>
 
-            <!-- My Bookings Table -->
-            <div class="card border-0 shadow-sm p-4 bg-white">
+            <!-- Recent Bookings Table -->
+            <div class="border p-4 bg-white">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="fw-bold mb-0 text-success"><i class="bi bi-journal-bookmark me-2"></i>My Bookings</h4>
-                    <a href="{{ url_for('user.my_bookings') }}" class="btn btn-link text-success p-0 fw-semibold text-decoration-none small">View All Bookings <i class="bi bi-arrow-right"></i></a>
+                    <h4 class="mb-0">My Bookings</h4>
+                    <a href="{{ url_for('user.my_bookings') }}" class="small text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
                 </div>
 
                 {% if not my_bookings %}
-                    <div class="text-center py-4 text-muted">
-                        <i class="bi bi-journal-x fs-2 text-muted mb-2 d-block"></i>
-                        <p class="mb-0 small">You don't have any bookings recorded yet.</p>
+                    <div class="text-center py-4 text-muted small">
+                        <p class="mb-0">You don't have any bookings recorded yet.</p>
                     </div>
                 {% else %}
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-bordered table-striped align-middle small">
                             <thead class="table-light">
                                 <tr>
                                     <th>Trek Name</th>
@@ -133,22 +95,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for booking in my_bookings[:5] %} {# Show top 5 recent bookings on dashboard #}
+                                {% for booking in my_bookings[:5] %}
                                     <tr>
-                                        <td class="fw-bold text-dark">{{ booking.trek.name }}</td>
-                                        <td><small class="text-muted"><i class="bi bi-calendar3 me-1"></i>{{ booking.booking_date.strftime('%d %b %Y') }}</small></td>
-                                        <td>
-                                            {% if booking.status == 'Booked' %}
-                                                <span class="badge bg-success rounded-pill px-3">Booked</span>
-                                            {% elif booking.status == 'Cancelled' %}
-                                                <span class="badge bg-danger rounded-pill px-3">Cancelled</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary rounded-pill px-3">{{ booking.status }}</span>
-                                            {% endif %}
-                                        </td>
+                                        <td><strong>{{ booking.trek.name }}</strong></td>
+                                        <td>{{ booking.booking_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ booking.status }}</td>
                                         <td class="text-end">
-                                            <a href="{{ url_for('user.trek_details', trek_id=booking.trek.id) }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
-                                                View Details
+                                            <a href="{{ url_for('user.trek_details', trek_id=booking.trek.id) }}" class="btn btn-outline-secondary btn-sm py-0">
+                                                Details
                                             </a>
                                         </td>
                                     </tr>

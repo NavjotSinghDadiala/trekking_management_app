@@ -6,23 +6,22 @@
 <div class="container my-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-        <h2 class="fw-bold"><i class="bi bi-person-badge-fill text-success me-2"></i>Guide Control Dashboard</h2>
-        <span class="badge bg-success px-3 py-2 rounded-pill uppercase fw-bold">Active Staff Guide</span>
+        <h2>Guide Dashboard</h2>
+        <span class="text-muted small">Logged in: Guide</span>
     </div>
 
     <!-- Assigned Treks List -->
-    <div class="card shadow-sm border-0 bg-white p-4">
-        <h4 class="fw-bold mb-4 text-success"><i class="bi bi-compass me-2"></i>Your Assigned Trekking Expeditions</h4>
+    <div class="border p-4 bg-white">
+        <h4 class="mb-3">Assigned Trekking Expeditions</h4>
         
         {% if not treks_data %}
             <div class="text-center py-5">
-                <i class="bi bi-tree fs-1 text-muted mb-3 d-block"></i>
-                <h5 class="fw-bold text-dark">No Treks Assigned Yet</h5>
-                <p class="text-muted">You have no treks assigned by the Admin at the moment. Contact the administrator to get assigned to upcoming treks.</p>
+                <h5 class="text-muted">No Treks Assigned Yet</h5>
+                <p class="text-muted small">You have no treks assigned by the Admin. Contact the administrator to get assigned to upcoming treks.</p>
             </div>
         {% else %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-bordered table-striped align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>Trek Name</th>
@@ -40,34 +39,18 @@
                             {% set trek = item.trek %}
                             <tr>
                                 <td><strong>{{ trek.name }}</strong></td>
-                                <td><i class="bi bi-geo-alt text-danger me-1"></i>{{ trek.location }}</td>
-                                <td>
-                                    {% if trek.difficulty == 'Easy' %}
-                                        <span class="badge bg-success">{{ trek.difficulty }}</span>
-                                    {% elif trek.difficulty == 'Moderate' %}
-                                        <span class="badge bg-warning text-dark">{{ trek.difficulty }}</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">{{ trek.difficulty }}</span>
-                                    {% endif %}
-                                </td>
+                                <td>{{ trek.location }}</td>
+                                <td>{{ trek.difficulty }}</td>
                                 <td class="small">
-                                    {{ trek.start_date.strftime('%d %b %Y') }} to {{ trek.end_date.strftime('%d %b %Y') }}<br>
+                                    {{ trek.start_date.strftime('%Y-%m-%d') }} to {{ trek.end_date.strftime('%Y-%m-%d') }}
                                     <span class="text-muted">({{ trek.duration }} days)</span>
                                 </td>
+                                <td>{{ trek.available_slots }} / {{ trek.max_slots }}</td>
+                                <td>{{ item.bookings_count }}</td>
+                                <td>{{ trek.status }}</td>
                                 <td>
-                                    <strong>{{ trek.available_slots }}</strong> / {{ trek.max_slots }} left
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary rounded-pill px-3 fs-6">{{ item.bookings_count }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge {% if trek.status == 'Open' %}bg-success{% elif trek.status == 'Closed' %}bg-danger{% elif trek.status == 'Ongoing' %}bg-info{% else %}bg-secondary{% endif %}">
-                                        {{ trek.status }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{{ url_for('staff.manage_trek', trek_id=trek.id) }}" class="btn btn-sm btn-success rounded-pill px-3">
-                                        <i class="bi bi-gear-fill me-1"></i>Manage
+                                    <a href="{{ url_for('staff.manage_trek', trek_id=trek.id) }}" class="btn btn-sm btn-outline-dark">
+                                        Manage
                                     </a>
                                 </td>
                             </tr>

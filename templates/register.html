@@ -3,86 +3,60 @@
 {% block title %}Register - TrekManager{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow border-0 p-4">
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <i class="bi bi-person-plus text-success fs-1"></i>
-                    <h2 class="mt-2 fw-bold text-dark">Register</h2>
-                    <p class="text-muted">Create a TrekManager account</p>
+<div class="row justify-content-center my-4">
+    <div class="col-md-6">
+        <div class="border p-4 bg-white">
+            <h2 class="text-center mb-3">Register</h2>
+            
+            <form method="POST">
+                <!-- Full Name Input -->
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter your full name" required>
                 </div>
-                
-                <form method="POST">
-                    <!-- Full Name Input -->
-                    <div class="mb-3">
-                        <label for="full_name" class="form-label fw-semibold">Full Name</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter your full name" required>
-                        </div>
-                    </div>
 
-                    <!-- Email Input -->
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
-                        </div>
-                    </div>
-
-                    <!-- Username Input -->
-                    <div class="mb-3">
-                        <label for="username" class="form-label fw-semibold">Username</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
-                        </div>
-                    </div>
-
-                    <!-- Password Input -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-semibold">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Create password" required>
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password Input -->
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label fw-semibold">Confirm Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
-                        </div>
-                    </div>
-
-                    <!-- Role Dropdown Selector -->
-                    <div class="mb-4">
-                        <label for="role" class="form-label fw-semibold">I am a...</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                            <select class="form-select" id="role" name="role" required>
-                                <option value="" disabled selected>-- Select Role --</option>
-                                <option value="user">User (Trekker)</option>
-                                <option value="staff">Trek Staff (Guide)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="d-grid mb-3">
-                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-semibold">
-                            <i class="bi bi-check-circle-fill me-2"></i>Register
-                        </button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-3">
-                    <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}" class="text-success fw-bold">Login here</a></p>
+                <!-- Email Input -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
                 </div>
+
+                <!-- Username Input -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Create password" required>
+                </div>
+
+                <!-- Confirm Password Input -->
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
+                </div>
+
+                <!-- Role Dropdown Selector -->
+                <div class="mb-4">
+                    <label for="role" class="form-label">I am a...</label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="" disabled selected>-- Select Role --</option>
+                        <option value="user">User (Trekker)</option>
+                        <option value="staff">Trek Staff (Guide)</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-dark">Register</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3 small">
+                <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
             </div>
         </div>
     </div>
