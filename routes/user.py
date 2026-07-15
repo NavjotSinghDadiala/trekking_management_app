@@ -178,15 +178,11 @@ def my_bookings():
     return render_template("user_my_bookings.html", bookings=bookings)
 
 
-# 7. Trekking History Route
 @user.route("/history")
 def history():
     if not current_user.is_authenticated or current_user.role != "user":
         flash("Unauthorized. Trekker access required.", "danger")
         return redirect(url_for("auth.login"))
     
-    bookings = Booking.query.filter(
-        (Booking.user_id == current_user.id) & 
-        (Booking.status.in_(["Completed", "Cancelled"]))
-    ).order_by(Booking.booking_date.desc()).all()
+    bookings = Booking.query.filter_by(user_id=current_user.id).order_by(Booking.booking_date.desc()).all()
     return render_template("user_history.html", bookings=bookings)

@@ -262,11 +262,15 @@ def edit_trek(trek_id):
         trek.description = description
         trek.max_slots = new_max
         trek.available_slots = new_max - active_bookings_count
-        trek.assigned_staff_id = int(assigned_staff_id) if assigned_staff_id else None
         trek.status = status
+        trek.assigned_staff_id = int(assigned_staff_id) if assigned_staff_id else None
         trek.start_date = start_date
         trek.end_date = end_date
         trek.price = float(price)
+        if status == "Completed":
+            active_bookings = Booking.query.filter_by(trek_id=trek.id, status="Booked").all()
+            for booking in active_bookings:
+                booking.status = "Completed"
 
         db.session.commit()
         flash("Trek updated successfully.", "success")

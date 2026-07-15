@@ -54,8 +54,6 @@
                         <label for="status" class="form-label">Select Current Status</label>
                         <select class="form-select" id="status" name="status" required>
                             <option value="Open" {% if trek.status == 'Open' %}selected{% endif %}>Open (Accepts Bookings)</option>
-                            <option value="Closed" {% if trek.status == 'Closed' %}selected{% endif %}>Closed (Blocks Bookings)</option>
-                            <option value="Ongoing" {% if trek.status == 'Ongoing' %}selected{% endif %}>Ongoing (Trek Started)</option>
                             <option value="Completed" {% if trek.status == 'Completed' %}selected{% endif %}>Completed (Trek Finished)</option>
                         </select>
                     </div>

@@ -99,10 +99,17 @@ def update_status(trek_id):
         return redirect(url_for("staff.dashboard"))
 
     new_status = request.form.get("status", "").strip()
-    valid_statuses = ["Open", "Closed", "Ongoing", "Completed"]
+    valid_statuses = ["Open", "Completed"]
 
     if new_status in valid_statuses:
         trek.status = new_status
+        
+        # If the trek is marked as Completed, update all associated bookings from Booked to Completed
+        if new_status == "Completed":
+            active_bookings = Booking.query.filter_by(trek_id=trek.id, status="Booked").all()
+            for booking in active_bookings:
+                booking.status = "Completed"
+                
         db.session.commit()
         flash(f"Trek status updated to '{new_status}' successfully.", "success")
     else:

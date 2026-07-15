@@ -58,11 +58,21 @@
                                         <td>{{ trek.location }}</td>
                                         <td>{{ trek.difficulty }}</td>
                                         <td>{{ trek.duration }} Days</td>
-                                        <td>{{ trek.available_slots }} left</td>
+                                        <td>
+                                            {% if trek.available_slots <= 0 %}
+                                                <span class="text-danger fw-bold">Full</span>
+                                            {% else %}
+                                                {{ trek.available_slots }} left
+                                            {% endif %}
+                                        </td>
                                         <td class="text-end">
-                                            <a href="{{ url_for('user.trek_details', trek_id=trek.id) }}" class="btn btn-outline-dark btn-sm">
-                                                Book Now
-                                            </a>
+                                            {% if trek.available_slots <= 0 %}
+                                                <button class="btn btn-outline-secondary btn-sm" disabled>Sold Out</button>
+                                            {% else %}
+                                                <a href="{{ url_for('user.trek_details', trek_id=trek.id) }}" class="btn btn-outline-dark btn-sm">
+                                                    Book Now
+                                                </a>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}

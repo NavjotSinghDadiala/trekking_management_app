@@ -84,10 +84,7 @@
                     <div class="col-md-6">
                         <label for="status" class="form-label">Trek Status</label>
                         <select class="form-select" id="status" name="status" required>
-                            <option value="Pending" {% if trek.status == 'Pending' %}selected{% endif %}>Pending Approval</option>
-                            <option value="Approved" {% if trek.status == 'Approved' %}selected{% endif %}>Approved</option>
                             <option value="Open" {% if trek.status == 'Open' %}selected{% endif %}>Open (Accepting Bookings)</option>
-                            <option value="Closed" {% if trek.status == 'Closed' %}selected{% endif %}>Closed</option>
                             <option value="Completed" {% if trek.status == 'Completed' %}selected{% endif %}>Completed</option>
                         </select>
                     </div>
