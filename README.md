@@ -1,6 +1,6 @@
 # Full-Stack Starter Structure
 
-This project provides a **ready-to-use** that I can quickly import whenever I start a new full-stack project. It keeps the setup simple while leaving room for scaling later.
+Trekking Management Application web application that allows Admin, Trek Staff and Users (Trekkers) to interact with the system based on their roles.
 
 ## Tech Stack
 - **Frontend:** Jinja, HTML, CSS, JavaScript  
