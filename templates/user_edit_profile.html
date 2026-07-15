@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - TrekManager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 p-4">
+            <div class="card-body">
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-gear text-success fs-1"></i>
+                    <h2 class="mt-2 fw-bold text-dark">Update Password</h2>
+                    <p class="text-muted">Change password for <strong>{{ current_user.username }}</strong></p>
+                </div>
+                
+                <form method="POST">
+                    <!-- New Password Input -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Min. 4 characters" minlength="4" required>
+                        </div>
+                        <div class="form-text mt-1 text-muted">
+                            Choose a secure password that you can explain during the viva!
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-semibold shadow-sm">
+                            <i class="bi bi-check-circle-fill me-2"></i>Save Password
+                        </button>
+                        
+                        <!-- Role-based cancel link -->
+                        {% if current_user.role == 'admin' %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary btn-lg rounded-pill">Cancel</a>
+                        {% elif current_user.role == 'staff' %}
+                            <a href="{{ url_for('staff.dashboard') }}" class="btn btn-outline-secondary btn-lg rounded-pill">Cancel</a>
+                        {% else %}
+                            <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary btn-lg rounded-pill">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

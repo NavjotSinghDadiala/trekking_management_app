@@ -94,6 +94,22 @@ def approve_staff(staff_id):
     return redirect(url_for("admin.dashboard"))
 
 
+@admin.route("/staff/reject/<int:staff_id>", methods=["POST"])
+@login_required
+def reject_staff(staff_id):
+    if not is_admin_user():
+        flash("Unauthorized.", "danger")
+        return redirect(url_for("home"))
+
+    staff = User.query.get_or_404(staff_id)
+    username = staff.username
+    db.session.delete(staff)
+    db.session.commit()
+    
+    flash(f"Rejected and deleted pending guide request for '{username}'.", "warning")
+    return redirect(url_for("admin.dashboard"))
+
+
 # 3. User & Staff Deactivation / Blacklisting
 @admin.route("/user/blacklist/<int:user_id>", methods=["POST"])
 @login_required
